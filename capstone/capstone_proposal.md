@@ -1,52 +1,72 @@
 # Machine Learning Engineer Nanodegree
 ## Capstone Proposal
 Luiz Picanço  
-March 13th, 2019
+March 19th, 2019
 
 ## Proposal
-_(approx. 2-3 pages)_
 
 ### Domain Background
-_(approx. 1-2 paragraphs)_
+The identification of the emotions associated with facial expressions is an intrinsically human trait, very important in social interactions and communication. Although a task considered easy for humans, it is considered very difficult for software to perform.
 
-In this section, provide brief details on the background information of the domain from which the project is proposed. Historical information relevant to the project should be included. It should be clear how or why a problem in the domain can or should be solved. Related academic research should be appropriately cited in this section, including why that research is relevant. Additionally, a discussion of your personal motivation for investigating a particular problem in the domain is encouraged but not required.
+Software capable of performing this task satisfactorily has many applications, such as evaluating customer satisfaction in a market research and evaluation of a driver's mental fatigue driving a motor vehicle.
+
+I consider this an interesting problem to solve, being in the field of computer vision, an area that I have a lot of interest.
+
+This project is based on this papers:
+- Training Deep Networks for Facial Expression Recognition with Crowd-Sourced Label Distribution[1]
+- Challenges in Representation Learning: A report on three machine learning contests[2]
 
 ### Problem Statement
-_(approx. 1 paragraph)_
-
-In this section, clearly describe the problem that is to be solved. The problem described should be well defined and should have at least one relevant potential solution. Additionally, describe the problem thoroughly such that it is clear that the problem is quantifiable (the problem can be expressed in mathematical or logical terms) , measurable (the problem can be measured by some metric and clearly observed), and replicable (the problem can be reproduced and occurs more than once).
+The problem to be solved by this project is the identification of which type of emotion is associated with a human face. The types of emotions that can be identified are: neutral, happiness, surprise, sadness, anger, disgust, fear and contempt.
+One of the ways to solve the problem is with the use of CNN (convolutional neural network).
 
 ### Datasets and Inputs
-_(approx. 2-3 paragraphs)_
+To solve the problem, 2 datasets will be used:
+FER2013 - Available on Kaggle, from the "Challenges in Representation Learning: Facial Expression Recognition Challenge" competition [3]. This dataset has 35,888 lines, with the following structure:
 
-In this section, the dataset(s) and/or input(s) being considered for the project should be thoroughly described, such as how they relate to the problem and why they should be used. Information such as how the dataset or input is (was) obtained, and the characteristics of the dataset or input, should be included with relevant references and citations as necessary It should be clear how the dataset(s) or input(s) will be used in the project and whether their use is appropriate given the context of the problem.
+- emotion - Emotion numeric code associated with the image(0=Angry, 1=Disgust, 2=Fear, 3=Happy, 4=Sad, 5=Surprise, 6=Neutral). It will not be used in this project.
+- pixels - Image data in grayscale with 48x48 pixels.
+- usage - Image utilization type(Training, PrivateTest, PublicTest). It will not be used in this project.
+
+FER+ - Available on Github [4]. This dataset also has 35,888 rows, with the following structure:
+- usage - Same meaning of the usage column in FER2013 dataset 
+- Image name - Image name
+- neutral, happiness, surprise, sadness, anger, disgust, fear, contempt, unknown, NF - Number of votes that each emotion received, associating it with the image
+
+The FER+ is an enhanced version of the FER2013 dataset with 2 main advantages:
+- Each image has been labeled by 10 crowd-sourced taggers, providing better quality than the original FER labels 
+- Since each image has 10 votes, each can have more than one emotion associated with it.
 
 ### Solution Statement
-_(approx. 1 paragraph)_
+For the solution of the proposed problem I intend to combine the two datasets, using only the pixels column of the first and the corresponding columns of the emotions of the second dataset. 
 
-In this section, clearly describe a solution to the problem. The solution should be applicable to the project domain and appropriate for the dataset(s) or input(s) given. Additionally, describe the solution thoroughly such that it is clear that the solution is quantifiable (the solution can be expressed in mathematical or logical terms) , measurable (the solution can be measured by some metric and clearly observed), and replicable (the solution can be reproduced and occurs more than once).
+This derived dataset will be divided into 3 parts: training, validation and test sets, being used in the training of a convolutional neural network. The output of the network will be a set of emotions associated with a probability.
+
+Another approach can also be used by combining the two datasets using only the pixels column of the first and the column corresponding to the emotion with the highest votes in the second dataset. In this approach the output of the network will be an emotion.
 
 ### Benchmark Model
-_(approximately 1-2 paragraphs)_
-
-In this section, provide the details for a benchmark model or result that relates to the domain, problem statement, and intended solution. Ideally, the benchmark model or result contextualizes existing methods or known information in the domain and problem given, which could then be objectively compared to the solution. Describe how the benchmark model or result is measurable (can be measured by some metric and clearly observed) with thorough detail.
+Since this is a classification problem, I can measure the performance of the model based on the accuracy. With a naive approach it is possible to achieve 25% accuracy by always returning the happiness emotion. For this problem I intend to achieve at least 75% accuracy.
 
 ### Evaluation Metrics
-_(approx. 1-2 paragraphs)_
+For the evaluation metrics I will use a confusion matrix to identify the false positives, false negatives, true positives and true negatives. Accuracy will also be used to calculate the correct predictions[5]:
 
-In this section, propose at least one evaluation metric that can be used to quantify the performance of both the benchmark model and the solution model. The evaluation metric(s) you propose should be appropriate given the context of the data, the problem statement, and the intended solution. Describe how the evaluation metric(s) are derived and provide an example of their mathematical representations (if applicable). Complex evaluation metrics should be clearly defined and quantifiable (can be expressed in mathematical or logical terms).
+![accuracy](./accuracy.png?raw=true)   
 
 ### Project Design
-_(approx. 1 page)_
+For approaching my solution I intend to use Python 3, Keras 2.2.x and Pandas, following this steps:
+1. Read the 2 datasets
+2. Perform an EDA on the two datasets
+3. Join the first dataset with the second, creating a unique dataset, as stated in the "Datasets and Inputs" section.
+4. Perform an EDA on the new dataset
+5. Separate the dataset into 3 parts: training, evaluation and testing
+6. Build a CNN model using Keras
+7. Use the training and evaluation sets to train the model.
+8. Test the network with the test set
+9. Perform the evaluation metrics and compare with the benchmark model, using the test set
 
-In this final section, summarize a theoretical workflow for approaching a solution given the problem. Provide thorough discussion for what strategies you may consider employing, what analysis of the data might be required before being used, or which algorithms will be considered for your implementation. The workflow and discussion that you provide should align with the qualities of the previous sections. Additionally, you are encouraged to include small visualizations, pseudocode, or diagrams to aid in describing the project design, but it is not required. The discussion should clearly outline your intended workflow of the capstone project.
-
------------
-
-**Before submitting your proposal, ask yourself. . .**
-
-- Does the proposal you have written follow a well-organized structure similar to that of the project template?
-- Is each section (particularly **Solution Statement** and **Project Design**) written in a clear, concise and specific fashion? Are there any ambiguous terms or phrases that need clarification?
-- Would the intended audience of your project be able to understand your proposal?
-- Have you properly proofread your proposal to assure there are minimal grammatical and spelling mistakes?
-- Are all the resources used for this project correctly cited and referenced?
+#### References
+* [1] Training Deep Networks for Facial Expression Recognition with Crowd-Sourced Label Distribution[1](https://arxiv.org/abs/1608.01041)
+* [2] Challenges in Representation Learning: A report on three machine learning contests[2](https://arxiv.org/abs/1307.0414)
+* [3] Challenges in Representation Learning: Facial Expression Recognition Challenge (https://www.kaggle.com/c/challenges-in-representation-learning-facial-expression-recognition-challenge/data)
+* [4] FER+(https://github.com/Microsoft/FERPlus)
+* [5] An introduction to ROC analysis(https://people.inf.elte.hu/kiss/11dwhdm/roc.pdf)
