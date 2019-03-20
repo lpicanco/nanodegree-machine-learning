@@ -28,29 +28,56 @@ FER2013 - Available on Kaggle, from the "Challenges in Representation Learning: 
 - pixels - Image data in grayscale with 48x48 pixels.
 - usage - Image utilization type(Training, PrivateTest, PublicTest). It will not be used in this project.
 
+A sample of the first lines of the dataset can be seen below:
+| emotion  |pixels   |  Usage |
+|---|---|---|---|
+| 0  | 70 80 82 72 58 58 60 63 54 58 60 48 89 115 121...  |  Training |
+| 0  | 151 150 147 155 148 133 111 140 170 174 182 15...  |  Training |
+| 2  | 231 212 156 164 174 138 161 173 182 200 106 38...  |  Training |
+| 4  |  24 32 36 30 32 23 19 20 30 41 21 22 32 34 21 1..  |  Training |
+| 6  | 4 0 0 0 0 0 0 0 0 0 0 0 3 15 23 28 48 50 58 84...  |  Training |
+
+
 FER+ - Available on Github [4]. This dataset also has 35,888 rows, with the following structure:
 - usage - Same meaning of the usage column in FER2013 dataset 
 - Image name - Image name
 - neutral, happiness, surprise, sadness, anger, disgust, fear, contempt, unknown, NF - Number of votes that each emotion received, associating it with the image
+
+A sample of the first lines of the dataset can be seen below:
+| Usage    | neutral | happiness | surprise | sadness | anger | disgust | fear | contempt | unknown | NF |
+|----------|---------|-----------|----------|---------|-------|---------|------|----------|---------|----|
+| Training | 4       | 0         | 0        | 1       | 3     | 2       | 0    | 0        | 0       | 0  |
+| Training | 6       | 0         | 1        | 1       | 0     | 0       | 0    | 0        | 2       | 0  |
+| Training | 5       | 0         | 0        | 3       | 1     | 0       | 0    | 0        | 1       | 0  |
+| Training | 4       | 0         | 0        | 4       | 1     | 0       | 0    | 0        | 1       | 0  |
+| Training | 9       | 0         | 0        | 1       | 0     | 0       | 0    | 0        | 0       | 0  |
 
 The FER+ is an enhanced version of the FER2013 dataset with 2 main advantages:
 - Each image has been labeled by 10 crowd-sourced taggers, providing better quality than the original FER labels 
 - Since each image has 10 votes, each can have more than one emotion associated with it.
 
 ### Solution Statement
-For the solution of the proposed problem I intend to combine the two datasets, using only the pixels column of the first and the corresponding columns of the emotions of the second dataset. 
+For the solution of the proposed problem I intend to combine the two datasets, using only the pixels column of the first and the corresponding columns of the emotions of the second dataset. This derived dataset will be splitted into 3 parts: training(80%), validation(10%) and test(10%) sets.
 
-This derived dataset will be divided into 3 parts: training, validation and test sets, being used in the training of a convolutional neural network. The output of the network will be a set of emotions associated with a probability.
+For the construction of the prediction model I will use Deep Learning through the use of CNN (convolutional neural network). CNN is a type of neural network widely used in solving image classification problems.
 
-Another approach can also be used by combining the two datasets using only the pixels column of the first and the column corresponding to the emotion with the highest votes in the second dataset. In this approach the output of the network will be an emotion.
+To the first layer of the network I will create an input with a shape of 48x48x1, relative to the amount of pixels of the image and the grayscale. In the last layer I will create an output with 10 nodes, with each one representing a different emotion. With softmax as a activation function, we can have more than one output on the network, associated with a probability.
+
+Another approach can also be used, associating each facial image with the emotion with the majority of the votes.
 
 ### Benchmark Model
-Since this is a classification problem, I can measure the performance of the model based on the accuracy. With a naive approach it is possible to achieve 25% accuracy by always returning the happiness emotion. For this problem I intend to achieve at least 75% accuracy.
+Given the image of a human face, the model must predict a human emotion associated with that face. Since 30% of the dataset is associated with a neutral emotion, I will perform a naive approach that all the images in the dataset are related to that emotion.
+
+The results of the model will be compared with the naive predictor to evaluate the performance.
 
 ### Evaluation Metrics
-For the evaluation metrics I will use a confusion matrix to identify the false positives, false negatives, true positives and true negatives. Accuracy will also be used to calculate the correct predictions[5]:
+For the evaluation metrics I will use a confusion matrix to identify the false positives, false negatives, true positives and true negatives. F1 score will also be used to measure the performance of the model[5].
 
-![accuracy](./accuracy.png?raw=true)   
+```
+Precision = TP/TP+FP
+Recall = TP/TP+FN
+F1 Score = 2*(Recall * Precision) / (Recall + Precision) 
+```
 
 ### Project Design
 For approaching my solution I intend to use Python 3, Keras 2.2.x and Pandas, following this steps:
