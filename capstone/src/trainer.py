@@ -21,7 +21,6 @@ class Trainer:
 
         datagen.fit(X_train)
 
-        # weight_path="model/model3_weights.{epoch:02d}-{val_loss:.4f}_{val_acc:.4f}.hdf5"
         model_checkpoint = ModelCheckpoint(self.model_path, monitor='val_loss', verbose=self.verbose, save_best_only=True, mode='min', save_weights_only=False)
         early_checkpoint = EarlyStopping(monitor="val_loss", patience=self.patience, verbose=self.verbose)
         reduce_lr = ReduceLROnPlateau('val_loss', factor=0.1, patience=int(self.patience/4), verbose=self.verbose)
