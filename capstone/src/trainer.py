@@ -27,6 +27,6 @@ class Trainer:
 
         callbacks = [model_checkpoint, History(), early_checkpoint, reduce_lr]
         return model.fit_generator(datagen.flow(X_train, y_train, batch_size=self.batch_size), 
-                                    validation_data=(X_validation, y_validation),
-                            epochs=self.epochs, verbose=self.verbose, steps_per_epoch=len(X_train) / 32,
+                                    validation_data=(X_validation, y_validation),verbose=self.verbose,
+                            epochs=self.epochs, steps_per_epoch=len(X_train) / self.batch_size,
                             callbacks=callbacks)
