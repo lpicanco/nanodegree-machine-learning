@@ -30,14 +30,13 @@ FER2013 - Available on Kaggle, from the "Challenges in Representation Learning: 
 
 A sample of the first lines of the dataset can be seen below:
 
-| emotion  |pixels   |  Usage |
-|---|---|---|---|
-| 0  | 70 80 82 72 58 58 60 63 54 58 60 48 89 115 121...  |  Training |
-| 0  | 151 150 147 155 148 133 111 140 170 174 182 15...  |  Training |
-| 2  | 231 212 156 164 174 138 161 173 182 200 106 38...  |  Training |
-| 4  |  24 32 36 30 32 23 19 20 30 41 21 22 32 34 21 1..  |  Training |
-| 6  | 4 0 0 0 0 0 0 0 0 0 0 0 3 15 23 28 48 50 58 84...  |  Training |
-
+| emotion | pixels                                            | Usage    |
+| ------- | ------------------------------------------------- | -------- |
+| 0       | 70 80 82 72 58 58 60 63 54 58 60 48 89 115 121... | Training |
+| 0       | 151 150 147 155 148 133 111 140 170 174 182 15... | Training |
+| 2       | 231 212 156 164 174 138 161 173 182 200 106 38... | Training |
+| 4       | 24 32 36 30 32 23 19 20 30 41 21 22 32 34 21 1..  | Training |
+| 6       | 4 0 0 0 0 0 0 0 0 0 0 0 3 15 23 28 48 50 58 84... | Training |
 
 FER+ - Available on Github [4]. This dataset also has 35,888 rows, with the following structure:
 - usage - Same meaning of the usage column in FER2013 dataset 
