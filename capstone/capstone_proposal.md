@@ -29,6 +29,7 @@ FER2013 - Available on Kaggle, from the "Challenges in Representation Learning: 
 - usage - Image utilization type(Training, PrivateTest, PublicTest). It will not be used in this project.
 
 A sample of the first lines of the dataset can be seen below:
+
 | emotion  |pixels   |  Usage |
 |---|---|---|---|
 | 0  | 70 80 82 72 58 58 60 63 54 58 60 48 89 115 121...  |  Training |
@@ -44,6 +45,7 @@ FER+ - Available on Github [4]. This dataset also has 35,888 rows, with the foll
 - neutral, happiness, surprise, sadness, anger, disgust, fear, contempt, unknown, NF - Number of votes that each emotion received, associating it with the image
 
 A sample of the first lines of the dataset can be seen below:
+
 | Usage    | neutral | happiness | surprise | sadness | anger | disgust | fear | contempt | unknown | NF |
 |----------|---------|-----------|----------|---------|-------|---------|------|----------|---------|----|
 | Training | 4       | 0         | 0        | 1       | 3     | 2       | 0    | 0        | 0       | 0  |
