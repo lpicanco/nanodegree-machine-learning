@@ -3,7 +3,10 @@
 
 This is my Machine Learning Engineer Nanodegree Capstone project.
 
-[Jupyter Notebook with the CNN training and final results](https://github.com/lpicanco/nanodegree-machine-learning/blob/master/capstone/facial_expression_recognition.ipynb)
+### Results:
+- [Proposal](https://github.com/lpicanco/nanodegree-machine-learning/blob/master/capstone/proposal.pdf)
+- [Report](https://github.com/lpicanco/nanodegree-machine-learning/blob/master/capstone/report.pdf)
+- [Jupyter Notebook with the CNN training and final results](https://github.com/lpicanco/nanodegree-machine-learning/blob/master/capstone/facial_expression_recognition.ipynb)
 
 ### How to train the network:
 
