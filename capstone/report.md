@@ -13,13 +13,14 @@ Software capable of performing this task satisfactorily has many applications, s
 
 I consider this an interesting problem to solve, being in the field of computer vision, an area that I have a lot of interest.
 
-This project is based on this papers:
+This project and the datasets are based on this papers:
 - Training Deep Networks for Facial Expression Recognition with Crowd-Sourced Label Distribution[1]
 - Challenges in Representation Learning: A report on three machine learning contests[2]
 
 ### Problem Statement
 The problem to be solved by this project is the identification of which type of emotion is associated with a human face. The types of emotions that can be identified are: neutral, happiness, surprise, sadness, anger, disgust, fear and contempt.
-One of the ways to solve the problem is with the use of CNN (convolutional neural network).
+
+The strategy to solve this problem is to train a neural network through a dataset with images of faces with the corresponding emotion identified. After training, this neural network should be able to predict emotions associated with facial expressions.
 
 ### Metrics
 For the evaluation metrics, I used a confusion matrix to identify false positives, false negatives, true positives, and true negatives. The F1 score was also used to measure the performance of the model[3]. For the training phase, I used a categorical cross-entropy function between predictions and targets to make the evaluation of the learning.
@@ -84,7 +85,7 @@ For the solution of the proposed problem I combined the two datasets using only 
 
 For the construction of the prediction model, I used Deep Learning through the use of CNN (convolutional neural network). CNN is a type of neural network widely used in solving image classification problems.
 
-Since the images in the dataset are 48x48 pixels gray-scale, the first layer of the network has an input shape of  48x48x1. In the last layer I created an output with 10 nodes, each representing a different emotion. With softmax as an activation function, we can have more than one output on the network, associated with a probability.
+Since the images in the dataset are 48x48 pixels grayscale, the first layer of the network has an input shape of  48x48x1. In the last layer I created an output with 10 nodes, each representing a different emotion. With softmax as an activation function, we can have more than one output on the network, associated with a probability.
 
 ![CNN Architecture](https://github.com/lpicanco/nanodegree-machine-learning/raw/master/capstone/imgs/cnn_architecture.png)
 **Fig. 3** - CNN model visual representation
@@ -109,6 +110,13 @@ Several steps were necessary in the pre-processing phase, with the objective of 
  7. The emotion associated with each image was determined randomly at the end of each training epoch, with probability relative to the number of votes received
 
 ### Implementation
+The implementation of the solution was divided into 4 parts: model construction, training, testing and prediction.
+
+#### Model construction
+In this phase of implementation a Sequential model was built with a input shape of 48x48x1, some convolutional layers, and an output shape of 8 with softmax activation.
+
+Each of the 8 outputs represents an emotion and with the softmax function, this representation is the probability of the emotion being related to the input image. The combined probabilities of the outputs sum to 1.
+
 ##### CNNModel is a class that encapsulate the CNN model
 ```python   
 class CNNModel:
@@ -238,6 +246,20 @@ class FERGenerator(Sequence):
         self.y = self.fer_reader.generate_emotions(self.y_set)
 ```
 
+#### Training
+In this phase of implementation the model was trained using the training set and the validation set.
+
+The compilation parameters of the model that obtained the best results were the following:
+
+ - loss: categorical_crossentropy
+ - optimizer: adam
+
+The following checkpoints were used:
+
+ - ModelCheckpoint - Save to disk the best performing model among training epochs. The validation set is used to make this evaluation
+ - EarlyStopping - Interrupts the training when the model stops learning after some epochs
+ - ReduceLROnPlateau - Reduces the rate of learning when the model stops learning after some epochs
+
 ##### Trainer is the class responsible for conducting the CNN training
 ```python
 class Trainer:
@@ -253,7 +275,6 @@ class Trainer:
 	        self.batch_size)
         validation_generator = FERGenerator(fer_reader, X_validation, 
 	        fer_reader.validation_set, self.batch_size)
-
         model_checkpoint = ModelCheckpoint(self.model_path, verbose=self.verbose, 
             save_best_only=True)
         early_stopping = EarlyStopping(patience=self.patience, verbose=self.verbose, 
@@ -277,8 +298,19 @@ class Trainer:
     trainer = Trainer("../model/best_model.hdf5", verbose=1, batch_size=512)
     trainer.train(model, reader, X_train, X_validation)
 ```
-##### After training, the CNN is ready to make predictions
+
+#### Testing
+In this phase the accuracy, f1 score and confusion matrix of the trained model was calculated
 ```python
+score = model.evaluate(X_test, y_test)
+y_pred = model.predict(X_test)
+plot_confusion_matrix(y_test, y_pred, reader.emotion_columns, normalize=True)
+```
+#### Prediction
+In this phase the model is ready to make predictions
+The opencv library[6] was used to crop the face part of the input photo before performing the prediction through the model
+
+```python/
 emotions = ["neutral","happiness","surprise","sadness","anger","disgust","fear","contempt"]
 
 def predict(model_file, image_file):
@@ -316,7 +348,7 @@ if __name__ == "__main__":
     predictions = predict(args.model, args.image)
     print("Predicted emotions: ", predictions)
 ```
-The complete source code can be found at the project repository[6].
+The complete source code can be found at the project repository[7].
 
 ### Refinement
 After the initial development, some modifications to the solution were necessary to improve the results:
@@ -338,7 +370,7 @@ Changing the emotion associated with each image at each training epoch, signific
 ## IV. Results
 ### Model Evaluation and Validation
 
-The representation of the final model can be seen in Fig. 3. We can see it in more detail this model below:
+The representation of the final model can be seen in Fig. 3. We can see it in more detail below:
 ```bash
 _________________________________________________________________
 Layer (type)                 Output Shape              Param #   
@@ -406,7 +438,7 @@ Trainable params: 2,596,836
 Non-trainable params: 1,896
 _________________________________________________________________
 ```
-A jupyter notebook was generated with the results of the training performed[7]
+A jupyter notebook was generated with the results of the training performed[8]
 
 After the training, the model achieved an accuracy of 71% and an F1 score of 0.48 with the test dataset.
 ![CNN Architecture](https://github.com/lpicanco/nanodegree-machine-learning/raw/master/capstone/imgs/training_accuracy.png)
@@ -415,19 +447,26 @@ After the training, the model achieved an accuracy of 71% and an F1 score of 0.4
 ![CNN Architecture](https://github.com/lpicanco/nanodegree-machine-learning/raw/master/capstone/imgs/test_confusion_matrix.png)
 **Fig. 6** - Test set Confusion Matrix
 
+The trained model was tested with some images obtained on the internet. The model was able to accurately predict the emotions in all images. Images containing groups of people were also used. 
+
+The result of these tests can be seen in Fig 7.
+
 ### Justification
 Comparing Fig. 4 and Fig. 6 we can observe a significant improvement over the naive model:
+
 | Model | Accuracy | F1 Score | Misclass |
 | ----- | -------- | -------- | -------- |
 | Naive | 0.32     | 0.06     | 0.67     |
 | CNN   | 0.71     | 0.48     | 0.28     |
 
-In Fig.7 some predictions are shown using real images.
+Despite the low performance with some types of emotions such as contempt and disgust, I believe the model is good enough to perform predictions of emotions in photos.
+
+In Fig.7 some predictions are shown using images found on the internet.
 
 ## V. Conclusion
 ### Free-Form Visualization
 
-Some predictions using images found on the internet:
+With some images obtained on the internet, the model was able to accurately predict the emotions present in them. An interesting feature is the ability to predict emotions of groups of people.
 ![CNN Architecture](https://github.com/lpicanco/nanodegree-machine-learning/raw/master/capstone/imgs/faces_prediction01.png)
 ![CNN Architecture](https://github.com/lpicanco/nanodegree-machine-learning/raw/master/capstone/imgs/faces_prediction02.png)
 **Fig. 7** - Emotions predicted by the trained model
@@ -438,6 +477,9 @@ The process of building this project began with the search for a reliable datase
 After getting the datasets, the next challenge was to clean the dataset and transform the images to a format more friendly to processing by a CNN. 
 
 Once that stage was over, the next and biggest challenge was to develop a CNN model that could learn to classify emotions correctly. I did some experiments with DenseNet, Inception and VGG16 but didn't get satisfactory results. The best result I had was with the model presented, varying the emotions associated with the images at each training epoch, combined with the image augmentation techniques.
+
+One aspect of this project that I found very interesting was the ability of some CNNs to converge relatively quickly to the expected result, which makes me think of the many practical applications in which they can be used. 
+My greatest difficulty was to be able to build a compact enough model that could converge satisfactorily to the expected results.
 
 ### Improvement
 I believe that better results can be achieved through the following suggestions:
@@ -452,6 +494,7 @@ I believe that better results can be achieved through the following suggestions:
 * [3] An introduction to ROC analysis(https://people.inf.elte.hu/kiss/11dwhdm/roc.pdf)
 * [4] Challenges in Representation Learning: Facial Expression Recognition Challenge (https://www.kaggle.com/c/challenges-in-representation-learning-facial-expression-recognition-challenge/data)
 * [5] FER+(https://github.com/Microsoft/FERPlus)
-* [6] Project repository(https://github.com/lpicanco/nanodegree-machine-learning/tree/master/capstone)
-* [7] Training results(https://github.com/lpicanco/nanodegree-machine-learning/blob/master/capstone/facial_expression_recognition.ipynb)
+* [6] OpenCV library(https://opencv.org)
+* [7] Project repository(https://github.com/lpicanco/nanodegree-machine-learning/tree/master/capstone)
+* [8] Training results(https://github.com/lpicanco/nanodegree-machine-learning/blob/master/capstone/facial_expression_recognition.ipynb)
 
